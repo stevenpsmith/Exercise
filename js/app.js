@@ -10,7 +10,11 @@ var exercise = {};
     
     exercise.Activities = Backbone.Collection.extend({
         model: exercise.Activity,
-        url: "exercise.json"
+        url: "exercise.json",
+        comparator: function(activity){
+            var date = new Date(activity.get('date'));
+            return date.getTime();
+        }
     });
     
     exercise.ActivityListView = Backbone.View.extend({
@@ -19,7 +23,7 @@ var exercise = {};
         attributes: {"data-role": 'listview'},
         
         initialize: function() {
-            this.collection.bind('add', this.add, this);
+            this.collection.bind('add', this.render, this);
             this.template = _.template($('#activity-list-item-template').html());
         },
         
@@ -36,14 +40,6 @@ var exercise = {};
             container.html($(this.el));
             container.trigger('create');
             return this;
-        },
-        
-        add: function(item) {
-            var activitiesList = $('#activities-list'),
-                template = this.template;
-                
-            activitiesList.append(template(item.toJSON()));
-            activitiesList.listview('refresh');
         }
     });
     
