@@ -1,5 +1,9 @@
-This is an example project to support the following blog post:
-* <insert url here when it is written>
+This is an example project to support the following blog posts:
 
-This repo has tags that snapshot the code for various blog posts.  Here is a mapping:
-* Introduction to Backbone.js with JQuery Mobile => BackboneIntro
+* insert intro url here when intro pulished
+* insert sort url here
+
+This repo has branches that represent the code for various blog posts.  Here is a mapping:
+
+* Introduction to Backbone.js with JQuery Mobile => master
+* Sorting collections with Backbone.js and Jquery Mobile => sort
