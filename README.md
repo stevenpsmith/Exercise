@@ -1,6 +1,6 @@
-This is an example project to support the following blog post:
+This is an example project to support the following blog posts:
 
-* <insert url here when it is written>
+* insert url here when intro pulished
 
 This repo has tags that snapshot the code for various blog posts.  Here is a mapping:
 
