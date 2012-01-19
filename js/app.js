@@ -43,6 +43,23 @@ var exercise = {};
         }
     });
     
+    exercise.ActivityDetailsView = Backbone.View.extend({
+        //since this template will render inside a div, we don't need to specify a tagname
+        initialize: function() {
+            this.template = _.template($('#activity-details-template').html());
+        },
+        
+        render: function() {
+            var container = this.options.viewContainer,
+                activity = this.model,
+                renderedContent = this.template(this.model.toJSON());
+                
+            container.html(renderedContent);
+//            container.trigger('create');
+            return this;
+        }
+    });
+    
     exercise.initData = function(){
         exercise.activities = new exercise.Activities();
         exercise.activities.fetch({async: false});  // use async false to have the app wait for data before rendering the list

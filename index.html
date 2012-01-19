@@ -18,6 +18,16 @@
       <li><a href="#activity-details" identifier="<%= id %>"><%= date %> - <%= type %></a></li>
     </script>
     
+    <script type="text/template" id="activity-details-template">    
+        <h3><%= type %></h3>
+        <div data-role="fieldcontain" id="activitiy-fields">
+          Date: <%= date %></br>
+          Minutes: <%= minutes %></br>
+          Distance: <%= distance %></br>
+          Comments: <%= comments %></br>
+        </div>
+    </script>
+    
     <!-- maximum scale added to stop zoom on select controls -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
   </head>
@@ -27,6 +37,16 @@
       <div data-role="header">
         <h1>Activities</h1>
         <a href="#" data-role="button" data-icon="add" id="add-button">Add</a>
+      </div>
+      <div data-role="content">
+          <!-- the contents of the list view will be rendered via the backbone view -->
+      </div>
+    </div>
+    
+    <div data-role="page" id="activityDetails">
+      <div data-role="header">
+        <h1>Activitie Details</h1>
+        <a href="#" data-role="button" data-icon="edit" id="edit-activity-button">Edit</a>
       </div>
       <div data-role="content">
           <!-- the contents of the list view will be rendered via the backbone view -->
