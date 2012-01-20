@@ -35,7 +35,14 @@ var exercise = {};
                 
             $(this.el).empty();
             activities.each(function(activity){
-                listView.append(template(activity.toJSON()));
+                var renderedItem = template(activity.toJSON()),
+                    $renderedItem = $(renderedItem);  //convert the html into an jQuery object
+                    $renderedItem.jqmData('activityId', activity.get('id'));  //set the data on it for use in the click event
+                $renderedItem.bind('click', function(){
+                    //set the activity id on the page element for use in the details pagebeforeshow event
+                    $('#activity-details').jqmData('activityId', $(this).jqmData('activityId'));  //'this' represents the element being clicked
+                });
+                listView.append($renderedItem);
             });
             container.html($(this.el));
             container.trigger('create');
@@ -55,7 +62,7 @@ var exercise = {};
                 renderedContent = this.template(this.model.toJSON());
                 
             container.html(renderedContent);
-//            container.trigger('create');
+            container.trigger('create');
             return this;
         }
     });
@@ -81,4 +88,15 @@ $('#add-button').live('click', function(){
     
     date = (today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear();
     exercise.activities.add({id: 6, date: date, type: 'Walk', distance: '2 miles', comments: 'Wow...that was easy.'});
+});
+
+$('#activity-details').live('pagebeforeshow', function(){
+    console.log('activityId: ' + $('#activity-details').jqmData('activityId'));
+    var activitiesDetailsContainer = $('#activity-details').find(":jqmData(role='content')"),
+        activityDetailsView,
+        activityId = $('#activity-details').jqmData('activityId'),
+        activityModel = exercise.activities.get(activityId);
+    
+    activityDetailsView = new exercise.ActivityDetailsView({model: activityModel, viewContainer: activitiesDetailsContainer});
+    activityDetailsView.render();
 });

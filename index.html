@@ -20,12 +20,12 @@
     
     <script type="text/template" id="activity-details-template">    
         <h3><%= type %></h3>
-        <div data-role="fieldcontain" id="activitiy-fields">
-          Date: <%= date %></br>
-          Minutes: <%= minutes %></br>
-          Distance: <%= distance %></br>
-          Comments: <%= comments %></br>
-        </div>
+        <ul data-role="listview" id="activitiy-fields" data-inset="true">
+          <li>Date: <%= date %></br></li>
+          <li>Minutes: <%= minutes %></br></li>
+          <li>Distance: <%= distance %></br></li>
+          <li>Comments: <%= comments %></br></li>
+        </ul>
     </script>
     
     <!-- maximum scale added to stop zoom on select controls -->
@@ -36,19 +36,19 @@
     <div data-role="page" id="activities">
       <div data-role="header">
         <h1>Activities</h1>
-        <a href="#" data-role="button" data-icon="add" id="add-button">Add</a>
+        <a href="#" data-role="button" data-icon="add" id="add-button" class="ui-btn-right">Add</a>
       </div>
       <div data-role="content">
           <!-- the contents of the list view will be rendered via the backbone view -->
       </div>
     </div>
     
-    <div data-role="page" id="activityDetails">
+    <div data-role="page" id="activity-details" data-add-back-btn="true">
       <div data-role="header">
-        <h1>Activitie Details</h1>
-        <a href="#" data-role="button" data-icon="edit" id="edit-activity-button">Edit</a>
+        <a href="#" data-role="button" data-icon="arrow-d" id="edit-activity-button" class="ui-btn-right">Edit</a>
+        <h1>Activities Details</h1>
       </div>
-      <div data-role="content">
+      <div data-role="content" id="activity-details-content">
           <!-- the contents of the list view will be rendered via the backbone view -->
       </div>
     </div>
