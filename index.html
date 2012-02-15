@@ -4,6 +4,7 @@
     <title>Exercise</title>
     
     <link rel="stylesheet" href="style/jquery.mobile-1.0.css" />
+    <link rel="stylesheet" href="style/exercise.css"/>
 
     <script src="js/vendor/jquery-1.6.4.min.js"></script>
     <script src="js/vendor/jquery.mobile-1.0.min.js"></script>
@@ -18,7 +19,7 @@
       <li><a href="#activity-details" identifier="<%= id %>"><%= date %> - <%= type %></a></li>
     </script>
     
-    <script type="text/template" id="activity-details-template">    
+    <script type="text/template" id="activity-details-template">
         <h3><%= type %></h3>
         <ul data-role="listview" id="activitiy-fields" data-inset="true">
           <li>Date: <%= date %></li>
@@ -26,6 +27,29 @@
           <li>Distance: <%= distance %></li>
           <li>Comments: <%= comments %></li>
         </ul>
+    </script>
+    
+    <script type="text/template" id="activity-form-template">
+        <label for="date" class="select">Date</label>
+        <input type="date" name="date" id="date" placeholder="Date" value="<%= date %>" />
+        
+        <label for="type" class="select">Type</label>
+        <select name="type" id="type">
+            <option>Run</option>
+            <option>Bike</option>
+            <option>Swim</option>
+            <option>Walk</option>
+        </select>
+        
+        <label for="distance">Distance</label>
+        <input type="text" name="distance" id="distance" placeholder="" value="<%= distance %>" />
+    
+        <label for="minutes">Minutes</label>
+        <input type="tel" name="minutes" id="minutes" placeholder="" value="<%= minutes %>" />
+        
+        <div data-role="fieldcontain">
+            <textarea name="comments" id="comments" placeholder="Comments"></textarea>
+        </div>
     </script>
     
     <!-- maximum scale added to stop zoom on select controls -->
@@ -36,7 +60,7 @@
     <div data-role="page" id="activities">
       <div data-role="header">
         <h1>Activities</h1>
-        <a href="#" data-role="button" data-icon="add" id="add-button" class="ui-btn-right">Add</a>
+        <a href="#activity-form" data-role="button" data-icon="add" id="add-button" class="ui-btn-right">Add</a>
       </div>
       <div data-role="content">
           <!-- the contents of the list view will be rendered via the backbone view -->
@@ -50,6 +74,17 @@
       </div>
       <div data-role="content" id="activity-details-content">
           <!-- the contents of the list view will be rendered via the backbone view -->
+      </div>
+    </div>
+    
+    <div data-role="page" id="activity-form" data-add-back-btn="true">
+      <div data-role="header">
+        <a href="#" data-role="button" data-icon="arrow-d" id="save-activity-button" class="ui-btn-right">Save</a>
+        <h1>New Activity</h1>
+      </div>
+      <div data-role="content" id="activity-form-content">
+          <!-- the contents of the form will be rendered via the backbone view -->
+          <form id="activity-form-form" action="#"></form>
       </div>
     </div>
     

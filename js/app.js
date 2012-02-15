@@ -6,6 +6,13 @@ var exercise = {};
 (function($){
     
     exercise.Activity = Backbone.Model.extend({
+        defaults: {
+            date: '',
+            type: '',
+            distance: '',
+            comments: '',
+            minutes: ''
+        }
     });
     
     exercise.Activities = Backbone.Collection.extend({
@@ -67,6 +74,24 @@ var exercise = {};
         }
     });
     
+    exercise.ActivityFormView = Backbone.View.extend({
+        //since this template will render inside a div, we don't need to specify a tagname, but we do want the fieldcontain
+        attributes: {"data-role": 'listview'},
+        
+        initialize: function() {
+            this.template = _.template($('#activity-form-template').html());
+        },
+        
+        render: function() {
+            var container = this.options.viewContainer,
+                renderedContent = this.template(this.model.toJSON());
+                
+            container.html(renderedContent);
+            container.trigger('create');
+            return this;
+        }
+    });
+    
     exercise.initData = function(){
         exercise.activities = new exercise.Activities();
         exercise.activities.fetch({async: false});  // use async false to have the app wait for data before rendering the list
@@ -83,11 +108,12 @@ $('#activities').live('pageinit', function(event){
 });
 
 $('#add-button').live('click', function(){
-    var today = new Date(),
-        date;
+    var activity = new exercise.Activity(),
+        activityForm = $('#activity-form-form'),
+        activityFormView;
     
-    date = (today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear();
-    exercise.activities.add({id: 6, date: date, type: 'Walk', distance: '2 miles', comments: 'Wow...that was easy.'});
+    activityFormView = new exercise.ActivityFormView({model: activity, viewContainer: activityForm});
+    activityFormView.render();
 });
 
 $('#activity-details').live('pagebeforeshow', function(){
