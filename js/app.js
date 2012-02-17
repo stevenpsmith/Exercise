@@ -4,16 +4,48 @@
 var exercise = {};
 
 (function($){
-    
     exercise.Activity = Backbone.Model.extend({
         defaults: {
-            date: '',
+            date: new Date(),
             type: '',
             distance: '',
             comments: '',
             minutes: ''
+        },
+        
+        dateInputType: function(){
+            return exercise.formatDate(this.get('date'), "yyyy-mm-dd");
+        },
+        
+        displayDate: function(){
+            return exercise.formatDate(this.get('date'), "mm/dd/yyyy");
+        },
+        
+        toJSON: function(){
+            var json = Backbone.Model.prototype.toJSON.call(this);
+            return _.extend(json, {dateInputType : this.dateInputType(), displayDate: this.displayDate()});
         }
     });
+    
+    exercise.formatDate = function(date, formatString){
+        var yyyy, month, mm, day, dd, formatedDate;
+        
+        if (date instanceof Date){
+            yyyy = date.getFullYear();
+            month = date.getMonth() + 1;
+            mm = month < 10 ? "0" + month : month;
+            day = date.getDate();
+            dd = day < 10 ? "0" + day : day;
+            
+            formatedDate = formatString.replace(/yyyy/i, yyyy);
+            formatedDate = formatedDate.replace(/mm/i, mm);
+            formatedDate = formatedDate.replace(/dd/i, dd);
+        }else{
+            formatedDate = "";
+        }
+        
+        return formatedDate;
+    };
     
     exercise.Activities = Backbone.Collection.extend({
         model: exercise.Activity,
@@ -21,6 +53,15 @@ var exercise = {};
         comparator: function(activity){
             var date = new Date(activity.get('date'));
             return date.getTime();
+        },
+        
+        parse: function(response){
+            var fixedDate = [];
+            _.each(response, function(item){
+                var stringDate = item.date;
+                item.date = new Date(stringDate); //https://github.com/jquery/jquery-mobile/issues/2755
+            });
+            return response;
         }
     });
     
@@ -125,4 +166,14 @@ $('#activity-details').live('pagebeforeshow', function(){
     
     activityDetailsView = new exercise.ActivityDetailsView({model: activityModel, viewContainer: activitiesDetailsContainer});
     activityDetailsView.render();
+});
+
+$('#edit-activity-button').live('click', function() {
+    var activityId = $('#activity-details').jqmData('activityId'),
+        activityModel = exercise.activities.get(activityId),
+        activityForm = $('#activity-form-form'),
+        activityFormView;
+        
+    activityFormView = new exercise.ActivityFormView({model: activityModel, viewContainer: activityForm});
+    activityFormView.render();
 });
