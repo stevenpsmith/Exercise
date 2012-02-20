@@ -13,8 +13,20 @@ var exercise = {};
             minutes: ''
         },
         
+        set: function(attributes, options) {
+            var aDate;
+            if (attributes.date){
+                //TODO - add validation to model for date strings
+                aDate = new Date(attributes.date);
+                if ( Object.prototype.toString.call(aDate) === "[object Date]" ){
+                    attributes.date = aDate;
+                }
+            }
+            Backbone.Model.prototype.set.call(this, attributes, options);
+        },
+        
         dateInputType: function(){
-            return exercise.formatDate(this.get('date'), "yyyy-mm-dd");
+            return exercise.formatDate(this.get('date'), "yyyy-mm-dd");//https://github.com/jquery/jquery-mobile/issues/2755
         },
         
         displayDate: function(){
@@ -53,16 +65,15 @@ var exercise = {};
         comparator: function(activity){
             var date = new Date(activity.get('date'));
             return date.getTime();
-        },
+        }//,
         
-        parse: function(response){
-            var fixedDate = [];
-            _.each(response, function(item){
-                var stringDate = item.date;
-                item.date = new Date(stringDate); //https://github.com/jquery/jquery-mobile/issues/2755
-            });
-            return response;
-        }
+        // parse: function(response){
+        //     _.each(response, function(item){
+        //         var stringDate = item.date;
+        //         item.date = new Date(stringDate);
+        //     });
+        //     return response;
+        // }
     });
     
     exercise.ActivityListView = Backbone.View.extend({
@@ -71,7 +82,7 @@ var exercise = {};
         attributes: {"data-role": 'listview'},
         
         initialize: function() {
-            this.collection.bind('add', this.render, this);
+            this.collection.bind('add', this.addItem, this);
             this.template = _.template($('#activity-list-item-template').html());
         },
         
@@ -83,18 +94,33 @@ var exercise = {};
                 
             $(this.el).empty();
             activities.each(function(activity){
-                var renderedItem = template(activity.toJSON()),
-                    $renderedItem = $(renderedItem);  //convert the html into an jQuery object
-                    $renderedItem.jqmData('activityId', activity.get('id'));  //set the data on it for use in the click event
-                $renderedItem.bind('click', function(){
-                    //set the activity id on the page element for use in the details pagebeforeshow event
-                    $('#activity-details').jqmData('activityId', $(this).jqmData('activityId'));  //'this' represents the element being clicked
-                });
-                listView.append($renderedItem);
-            });
+                this.renderItem(activity);
+            }, this);
             container.html($(this.el));
             container.trigger('create');
             return this;
+        },
+        
+        addItem: function(item) {
+            var listView = $(this.el);
+            
+            this.renderItem(item);
+            listView.listview('refresh');
+        },
+        
+        renderItem: function(item) {
+            var template = this.template,
+                listView = $(this.el),
+                renderedItem = template(item.toJSON()),
+                $renderedItem = $(renderedItem);
+                
+            $renderedItem.jqmData('activityId', item.get('id'));
+            $renderedItem.bind('click', function(){
+                //set the activity id on the page element for use in the details pagebeforeshow event
+                $('#activity-details').jqmData('activityId', $(this).jqmData('activityId'));  //'this' represents the element being clicked
+            });
+            
+            listView.append($renderedItem);
         }
     });
     
@@ -117,7 +143,7 @@ var exercise = {};
     
     exercise.ActivityFormView = Backbone.View.extend({
         //since this template will render inside a div, we don't need to specify a tagname, but we do want the fieldcontain
-        attributes: {"data-role": 'listview'},
+        attributes: {"data-role": 'fieldcontain'},
         
         initialize: function() {
             this.template = _.template($('#activity-form-template').html());
@@ -148,32 +174,58 @@ $('#activities').live('pageinit', function(event){
     activitiesListView.render();
 });
 
-$('#add-button').live('click', function(){
-    var activity = new exercise.Activity(),
-        activityForm = $('#activity-form-form'),
-        activityFormView;
+$(document).ready(function(){
     
-    activityFormView = new exercise.ActivityFormView({model: activity, viewContainer: activityForm});
-    activityFormView.render();
-});
-
-$('#activity-details').live('pagebeforeshow', function(){
-    console.log('activityId: ' + $('#activity-details').jqmData('activityId'));
-    var activitiesDetailsContainer = $('#activity-details').find(":jqmData(role='content')"),
-        activityDetailsView,
-        activityId = $('#activity-details').jqmData('activityId'),
-        activityModel = exercise.activities.get(activityId);
+    $('#add-button').live('click', function(){
+        var activity = new exercise.Activity(),
+            activityForm = $('#activity-form-form'),
+            activityFormView;
     
-    activityDetailsView = new exercise.ActivityDetailsView({model: activityModel, viewContainer: activitiesDetailsContainer});
-    activityDetailsView.render();
-});
+        //clear any existing id attribute from the details page
+        $('#activity-details').jqmRemoveData('activityId');
+        activityFormView = new exercise.ActivityFormView({model: activity, viewContainer: activityForm});
+        activityFormView.render();
+    });
 
-$('#edit-activity-button').live('click', function() {
-    var activityId = $('#activity-details').jqmData('activityId'),
-        activityModel = exercise.activities.get(activityId),
-        activityForm = $('#activity-form-form'),
-        activityFormView;
+    $('#activity-details').live('pagebeforeshow', function(){
+        console.log('activityId: ' + $('#activity-details').jqmData('activityId'));
+        var activitiesDetailsContainer = $('#activity-details').find(":jqmData(role='content')"),
+            activityDetailsView,
+            activityId = $('#activity-details').jqmData('activityId'),
+            activityModel = exercise.activities.get(activityId);
+    
+        activityDetailsView = new exercise.ActivityDetailsView({model: activityModel, viewContainer: activitiesDetailsContainer});
+        activityDetailsView.render();
+    });
+
+    $('#edit-activity-button').live('click', function() {
+        var activityId = $('#activity-details').jqmData('activityId'),
+            activityModel = exercise.activities.get(activityId),
+            activityForm = $('#activity-form-form'),
+            activityFormView;
         
-    activityFormView = new exercise.ActivityFormView({model: activityModel, viewContainer: activityForm});
-    activityFormView.render();
+        activityFormView = new exercise.ActivityFormView({model: activityModel, viewContainer: activityForm});
+        activityFormView.render();
+    });
+    
+    $('#save-activity-button').live('click', function(){
+        var activityId = $('#activity-details').jqmData('activityId'),
+            activity,
+            formJSON = $('#activity-form-form').formParams();
+        
+        console.log("form: " + JSON.stringify($('#activity-form-form').formParams()));
+        console.log("id: " + activityId);
+        
+        
+        if (activityId){
+            //editing
+            activity = exercise.activities.get(activityId);
+            activity.set(formJSON); //not calling save since we have no REST backend...save in memory
+        }else{
+            //new (since we have no REST backend, create a new model and add to collection to prevent Backbone making REST calls)
+            activity = new exercise.Activity(formJSON);
+            activity.set({'id': new Date().getTime()});  //create some identifier
+            exercise.activities.add(activity);
+        }
+    });
 });
