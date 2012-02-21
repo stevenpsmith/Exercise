@@ -67,15 +67,7 @@ var exercise = {};
         comparator: function(activity){
             var date = new Date(activity.get('date'));
             return date.getTime();
-        }//,
-        
-        // parse: function(response){
-        //     _.each(response, function(item){
-        //         var stringDate = item.date;
-        //         item.date = new Date(stringDate);
-        //     });
-        //     return response;
-        // }
+        }
     });
     
     exercise.ActivityListView = Backbone.View.extend({
@@ -84,8 +76,9 @@ var exercise = {};
         attributes: {"data-role": 'listview'},
         
         initialize: function() {
-            this.collection.bind('add', this.addItem, this);
+            this.collection.bind('add', this.render, this);
             this.collection.bind('change', this.changeItem, this);
+            this.collection.bind('reset', this.render, this);
             this.template = _.template($('#activity-list-item-template').html());
         },
         
@@ -95,6 +88,7 @@ var exercise = {};
                 template = this.template,
                 listView = $(this.el);
                 
+            container.empty();
             $(this.el).empty();
             activities.each(function(activity){
                 this.renderItem(activity);
@@ -102,13 +96,6 @@ var exercise = {};
             container.html($(this.el));
             container.trigger('create');
             return this;
-        },
-        
-        addItem: function(item) {
-            var listView = $(this.el);
-            
-            this.renderItem(item);
-            listView.listview('refresh');
         },
         
         renderItem: function(item) {
@@ -127,7 +114,7 @@ var exercise = {};
         },
         
         changeItem: function(item){
-            console.log("Really");
+            this.collection.sort();
         }
     });
     
