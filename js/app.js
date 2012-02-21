@@ -14,12 +14,14 @@ var exercise = {};
         },
         
         set: function(attributes, options) {
-            var aDate;
+            var aDate, foo;
             if (attributes.date){
-                //TODO - add validation to model for date strings
+                //TODO future version - make sure date is valid format during input
                 aDate = new Date(attributes.date);
-                if ( Object.prototype.toString.call(aDate) === "[object Date]" ){
+                if ( Object.prototype.toString.call(aDate) === "[object Date]" && !isNaN(aDate.getTime()) ){
                     attributes.date = aDate;
+                }else{
+                    attributes.date = '';
                 }
             }
             Backbone.Model.prototype.set.call(this, attributes, options);
@@ -83,6 +85,7 @@ var exercise = {};
         
         initialize: function() {
             this.collection.bind('add', this.addItem, this);
+            this.collection.bind('change', this.changeItem, this);
             this.template = _.template($('#activity-list-item-template').html());
         },
         
@@ -121,6 +124,10 @@ var exercise = {};
             });
             
             listView.append($renderedItem);
+        },
+        
+        changeItem: function(item){
+            console.log("Really");
         }
     });
     
@@ -211,10 +218,15 @@ $(document).ready(function(){
     $('#save-activity-button').live('click', function(){
         var activityId = $('#activity-details').jqmData('activityId'),
             activity,
+            dateComponents,
             formJSON = $('#activity-form-form').formParams();
         
-        console.log("form: " + JSON.stringify($('#activity-form-form').formParams()));
-        console.log("id: " + activityId);
+        //if we are on iOS and we have a date...convert it from yyyy-mm-dd back to mm/dd/yyyy
+        //TODO future version - for non-iOS, we would need to validate the date is in the expected format (mm/dd/yyyy)
+        if (formJSON.date && ((navigator.userAgent.indexOf('iPhone') >= 0 || navigator.userAgent.indexOf('iPad') >= 0)) ){
+            dateComponents = formJSON.date.split("-");
+            formJSON.date = dateComponents[1] + "/" + dateComponents[2] + "/" + dateComponents[0];
+        }
         
         
         if (activityId){
