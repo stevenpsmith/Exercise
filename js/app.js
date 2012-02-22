@@ -14,14 +14,12 @@ var exercise = {};
         },
         
         set: function(attributes, options) {
-            var aDate, foo;
+            var aDate;
             if (attributes.date){
                 //TODO future version - make sure date is valid format during input
                 aDate = new Date(attributes.date);
                 if ( Object.prototype.toString.call(aDate) === "[object Date]" && !isNaN(aDate.getTime()) ){
                     attributes.date = aDate;
-                }else{
-                    attributes.date = '';
                 }
             }
             Backbone.Model.prototype.set.call(this, attributes, options);
@@ -175,7 +173,7 @@ $(document).ready(function(){
             activityForm = $('#activity-form-form'),
             activityFormView;
     
-        //clear any existing id attribute from the details page
+        //clear any existing id attribute from the form page
         $('#activity-details').jqmRemoveData('activityId');
         activityFormView = new exercise.ActivityFormView({model: activity, viewContainer: activityForm});
         activityFormView.render();
@@ -214,7 +212,6 @@ $(document).ready(function(){
             dateComponents = formJSON.date.split("-");
             formJSON.date = dateComponents[1] + "/" + dateComponents[2] + "/" + dateComponents[0];
         }
-        
         
         if (activityId){
             //editing
