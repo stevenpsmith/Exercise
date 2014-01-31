@@ -1,0 +1,23 @@
+input.ui-input-text {
+    vertical-align: top;
+    display: inline-block;  
+    width: 60%;
+}
+
+textarea.ui-input-text {
+    width: 90% !important;
+}
+
+label.ui-input-text, label.ui-select {
+    margin: 0;
+    padding: 0.4em;
+    vertical-align: middle;
+    display: inline-block;  
+    width: 25%;
+    clear:both;
+}
+
+div.ui-select {
+    width: 60%;
+    display: inline-block;
+}
