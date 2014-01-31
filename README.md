@@ -11,3 +11,4 @@ This repo has branches that represent the code for various blog posts.  Here is 
 * Sorting collections with Backbone.js and Jquery Mobile => sort
 * From List to Details View using jQuery Mobile and Backbone.js => details-display
 * Using jQuery Mobile and Backbone.js for handling forms => new-and-edit
+* Using jQuery Mobile 1.4.0 and Backbone 1.1.0 => update-to-jqm14-bb11 

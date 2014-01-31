@@ -17,6 +17,7 @@ var exercise = {};
             var aDate;
             if (attributes.date){
                 //TODO future version - make sure date is valid format during input
+		console.log("attributes.date ", attributes.date);
                 aDate = new Date(attributes.date);
                 if ( Object.prototype.toString.call(aDate) === "[object Date]" && !isNaN(aDate.getTime()) ){
                     attributes.date = aDate;
@@ -26,7 +27,7 @@ var exercise = {};
         },
         
         dateInputType: function(){
-            return exercise.formatDate(this.get('date'), "yyyy-mm-dd");//https://github.com/jquery/jquery-mobile/issues/2755
+            return exercise.formatDate(this.get('date'), "yyyy-mm-dd"); //https://github.com/jquery/jquery-mobile/issues/2755
         },
         
         displayDate: function(){
@@ -55,7 +56,7 @@ var exercise = {};
         }else{
             formatedDate = "";
         }
-        
+
         return formatedDate;
     };
     
@@ -73,7 +74,8 @@ var exercise = {};
         id: 'activities-list',
         attributes: {"data-role": 'listview'},
         
-        initialize: function() {
+        initialize: function(options) {
+	    this.options = options || {};
             this.collection.bind('add', this.render, this);
             this.collection.bind('change', this.changeItem, this);
             this.collection.bind('reset', this.render, this);
@@ -113,12 +115,14 @@ var exercise = {};
         
         changeItem: function(item){
             this.collection.sort();
+	    this.render();
         }
     });
     
     exercise.ActivityDetailsView = Backbone.View.extend({
         //since this template will render inside a div, we don't need to specify a tagname
-        initialize: function() {
+        initialize: function(options) {
+	    this.options = options || {};
             this.template = _.template($('#activity-details-template').html());
         },
         
@@ -137,7 +141,8 @@ var exercise = {};
         //since this template will render inside a div, we don't need to specify a tagname, but we do want the fieldcontain
         attributes: {"data-role": 'fieldcontain'},
         
-        initialize: function() {
+        initialize: function(options) {
+	    this.options = options || {};
             this.template = _.template($('#activity-form-template').html());
         },
         
@@ -158,7 +163,7 @@ var exercise = {};
     
 }(jQuery));
 
-$('#activities').live('pageinit', function(event){
+$('#activities').on('pageinit', function(event){
     var activitiesListContainer = $('#activities').find(":jqmData(role='content')"),
         activitiesListView;
     exercise.initData();
@@ -168,7 +173,7 @@ $('#activities').live('pageinit', function(event){
 
 $(document).ready(function(){
     
-    $('#add-button').live('click', function(){
+    $('#add-button').on('click', function(){
         var activity = new exercise.Activity(),
             activityForm = $('#activity-form-form'),
             activityFormView;
@@ -179,7 +184,7 @@ $(document).ready(function(){
         activityFormView.render();
     });
 
-    $('#activity-details').live('pagebeforeshow', function(){
+    $('#activity-details').on('pagebeforeshow', function(){
         console.log('activityId: ' + $('#activity-details').jqmData('activityId'));
         var activitiesDetailsContainer = $('#activity-details').find(":jqmData(role='content')"),
             activityDetailsView,
@@ -190,7 +195,7 @@ $(document).ready(function(){
         activityDetailsView.render();
     });
 
-    $('#edit-activity-button').live('click', function() {
+    $('#edit-activity-button').on('click', function() {
         var activityId = $('#activity-details').jqmData('activityId'),
             activityModel = exercise.activities.get(activityId),
             activityForm = $('#activity-form-form'),
@@ -200,7 +205,7 @@ $(document).ready(function(){
         activityFormView.render();
     });
     
-    $('#save-activity-button').live('click', function(){
+    $('#save-activity-button').on('click', function(){
         var activityId = $('#activity-details').jqmData('activityId'),
             activity,
             dateComponents,
@@ -208,7 +213,11 @@ $(document).ready(function(){
         
         //if we are on iOS and we have a date...convert it from yyyy-mm-dd back to mm/dd/yyyy
         //TODO future version - for non-iOS, we would need to validate the date is in the expected format (mm/dd/yyyy)
-        if (formJSON.date && ((navigator.userAgent.indexOf('iPhone') >= 0 || navigator.userAgent.indexOf('iPad') >= 0)) ){
+        if (formJSON.date && (navigator.userAgent.indexOf('iPhone') >= 0 || 
+			      navigator.userAgent.indexOf('iPad') >= 0 ||
+			      navigator.userAgent.indexOf('Chrome') >= 0
+			     ) 
+	   ){
             dateComponents = formJSON.date.split("-");
             formJSON.date = dateComponents[1] + "/" + dateComponents[2] + "/" + dateComponents[0];
         }

@@ -3,21 +3,13 @@
   <head>
     <title>Exercise</title>
     
-    <link rel="stylesheet" href="style/jquery.mobile-1.0.css" />
+    <link rel="stylesheet" href="style/jquery.mobile-1.4.0.css" />
+    <link rel="stylesheet" href="style/jquery.mobile.icons-1.4.0.min.css" />
     <link rel="stylesheet" href="style/exercise.css"/>
 
-    <script src="js/vendor/jquery-1.6.4.min.js"></script>
-    <script src="js/vendor/jquery.mobile-1.0.min.js"></script>
-    <script src="js/vendor/underscore.js"></script>    
-    <script src="js/vendor/backbone.js"></script>
-    <script src="js/vendor/formparams.js"></script>
-    
-    <!-- App specific scripts -->
-    <script src="js/app.js"></script>
-    
     <!-- templates -->
     <script type="text/template" id="activity-list-item-template">    
-      <li><a href="#activity-details" identifier="<%= id %>"><%= displayDate %> - <%= type %></a></li>
+      <li><a href="#activity-details" data-transition="slide" identifier="<%= id %>"><%= displayDate %> - <%= type %></a></li>
     </script>
     
     <script type="text/template" id="activity-details-template">
@@ -32,7 +24,10 @@
     
     <script type="text/template" id="activity-form-template">
         <label for="date" class="select">Date</label>
-        <% if (navigator.userAgent.indexOf('iPhone') >= 0 || navigator.userAgent.indexOf('iPad') >= 0) { %>
+        <% if (navigator.userAgent.indexOf('iPhone') >= 0 ||
+	       navigator.userAgent.indexOf('iPad') >= 0 || 
+	       navigator.userAgent.indexOf('Chrome') >= 0
+	      ) { %>
             <input type="date" name="date" id="date" placeholder="Date" value="<%= dateInputType %>" />
         <% }else{ %>
             <input type="date" name="date" id="date" placeholder="Date" value="<%= displayDate %>" />
@@ -47,10 +42,12 @@
         </select>
         
         <label for="distance">Distance</label>
-        <input type="text" name="distance" id="distance" placeholder="" value="<%= distance %>" />
+	<input type="range" name="distance" id="distance" data-highlight="true" min="0" max="180" value="<%= minutes %>" >
+        <!-- <input type="text" name="distance" id="distance" placeholder="" value="<%= distance %>" /> -->
     
         <label for="minutes">Minutes</label>
-        <input type="tel" name="minutes" id="minutes" placeholder="" value="<%= minutes %>" />
+        <!-- <input type="tel" name="minutes" id="minutes" placeholder="" value="<%= minutes %>" /> -->
+	<input type="range" name="minutes" id="minutes" data-highlight="true" min="0" max="180" value="<%= minutes %>" >
         
         <div data-role="fieldcontain">
             <textarea name="comments" id="comments" placeholder="Comments"><%= comments %></textarea>
@@ -65,16 +62,16 @@
     <div data-role="page" id="activities">
       <div data-role="header">
         <h1>Activities</h1>
-        <a href="#activity-form" data-role="button" data-icon="add" id="add-button" class="ui-btn-right">Add</a>
+        <a href="#activity-form" id="add-button" data-transition="slide" class="ui-btn ui-btn-right ui-corner-all ui-shadow ui-mini ui-btn-icon-left  ui-icon-plus">Add</a>
       </div>
       <div data-role="content">
           <!-- the contents of the list view will be rendered via the backbone view -->
       </div>
     </div>
     
-    <div data-role="page" id="activity-details" data-add-back-btn="true">
-      <div data-role="header">
-        <a href="#activity-form" data-role="button" data-icon="arrow-d" id="edit-activity-button" class="ui-btn-right">Edit</a>
+    <div data-role="page" id="activity-details">
+      <div data-role="header"  data-add-back-btn="true">
+        <a href="#activity-form" id="edit-activity-button" data-transition="slide" class="ui-btn ui-btn-right ui-corner-all ui-shadow ui-mini ui-btn-icon-left  ui-icon-edit">Edit</a>
         <h1>Activity Details</h1>
       </div>
       <div data-role="content" id="activity-details-content">
@@ -82,8 +79,8 @@
       </div>
     </div>
     
-    <div data-role="page" id="activity-form" data-add-back-btn="true">
-      <div data-role="header">
+    <div data-role="page" id="activity-form" >
+      <div data-role="header"  data-add-back-btn="true">
         <a href="#" data-role="button" data-icon="check" data-theme="b" data-rel="back" id="save-activity-button" class="ui-btn-right">Save</a>
         <h1>New Activity</h1>
       </div>
@@ -92,6 +89,16 @@
           <form id="activity-form-form" action="#"></form>
       </div>
     </div>
+
+    <script src="js/vendor/jquery-1.11.0.min.js"></script>
+    <script src="js/vendor/jquery.mobile-1.4.0.min.js"></script>
+    <script src="js/vendor/underscore-min.js"></script>    
+    <script src="js/vendor/backbone-min.js"></script>
+    <script src="js/vendor/formparams.js"></script>
     
+    <!-- App specific scripts -->
+    <script src="js/app.js"></script>
+    
+
   </body>
 </html>
